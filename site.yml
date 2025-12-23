@@ -18,6 +18,32 @@
       update_cache: yes
     when: ansible_distribution == "Ubuntu"
 
+
+- hosts: all
+  become: true
+  tasks:
+
+  - name: create simone user
+    tags: always
+    user: 
+      name: simone 
+      groups: root
+
+  - name: add ssh key for simone
+    tags: always
+    authorized_key:
+      user: simone
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMwMvlHEdpsIyn9puucdXhX8WDDlIdY/RH6CdURBAnRJ admin default"
+
+  - name: add sudoers file for simone
+    tags: always
+    copy: 
+      src: sudoer_simone
+      dest: /etc/sudoers.d/simone
+      owner: root
+      group: root
+      mode: 0440
+  
 - hosts: web_servers
   become: true
   tasks:
@@ -73,6 +99,7 @@
       group: root
       mode: 0644 
 
+
 - hosts: db_servers
   become: true
   tasks:
@@ -90,6 +117,7 @@
       name: mariadb-server
       state: latest
     when: ansible_distribution == "Ubuntu"
+
 
 - hosts: file_servers
   become: true
